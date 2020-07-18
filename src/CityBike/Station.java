@@ -1,6 +1,8 @@
 package CityBike;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Station {
     static private int staticID = 0;
@@ -9,10 +11,13 @@ public class Station {
     private HashMap<Integer, Bike> bikeHashStation = new HashMap<>();
     public static HashMap<Integer, Station> stationHashMap = new HashMap<>();
 
+
     public Station(String stationLocation) {
         setStationID(staticID + 1);
         staticID++;
-        this.stationLocation = stationLocation;
+        setStationLocation(stationLocation);
+        System.out.println("\nNew Station added!\n");
+        System.out.println(this.toString());
         stationHashMap.put(this.getStationID(), this);
     }
 
@@ -40,7 +45,16 @@ public class Station {
         this.bikeHashStation = bikeHashStation;
     }
 
+    @Override
+    public String toString() {
+        return "Station{" +
+                "stationID=" + stationID +
+                ", stationLocation='" + stationLocation + '\'' +
+                '}';
+    }
+
     public void addBike(Bike newBike) {
+        //Adds new Bike only if the status is "CanBeRented";
         if(newBike.getBikeStatus() == Bike.BikeStatus.CanBeRented) {
             if (this.getBikeHashStation() == null) {
                 HashMap<Integer, Bike> bikeHashStation = new HashMap<>();
@@ -50,34 +64,28 @@ public class Station {
             if (this.getBikeHashStation().size() < 5) {
                 this.getBikeHashStation().put(newBike.getBikeID(), newBike);
                 System.out.println("\nNew Bike added to " + this.getStationLocation() + " station.");
+                System.out.println("Size" + this.getBikeHashStation().size());
             } else {
                 System.out.println("\nThe station, " + this.getStationLocation() + " is full and cannot have more than 5 bikes.");
             }
         } else {
             System.out.println("Bike cannot be rented.");
         }
-
     }
 
     public static void printAllStations() {
-        Iterator iterate = stationHashMap.entrySet().iterator();
         System.out.println("List of Bikes and their stations: ");
         System.out.printf("%-16s %-16s %-16s %-16s %-16s %-16s %n", "Station ID", "Station Location", "Bike ID", "Bike Name", "Bike Color", "Bike Status");
-        while (iterate.hasNext()) {
-            Map.Entry<Integer, Station> pair = (Map.Entry) iterate.next();
-            if (pair.getValue().getBikeHashStation() == null) {
-                System.out.printf("%-16d %-16s %-16s %-16s %-16s %-16s %n", pair.getKey(), pair.getValue().getStationLocation(), "None", "None", "None", "None");
+        for (Map.Entry<Integer, Station> entry : stationHashMap.entrySet()) {
+            if (entry.getValue().getBikeHashStation() == null) {
+                System.out.printf("%-16d %-16s %-16s %-16s %-16s %-16s %n", entry.getKey(), entry.getValue().getStationLocation(), "None", "None", "None", "None");
             } else {
-                Iterator iterateBike = pair.getValue().getBikeHashStation().entrySet().iterator();
+                Iterator iterateBike = entry.getValue().getBikeHashStation().entrySet().iterator();
                 while (iterateBike.hasNext()) {
                     Map.Entry<Integer, Bike> pairBike = (Map.Entry) iterateBike.next();
-                    System.out.printf("%-16d %-16s %-16d %-16s %-16s %-16s %n", pair.getKey(), pair.getValue().getStationLocation(), pairBike.getKey(), pairBike.getValue().getBikeName(), pairBike.getValue().getBikeColor(), pairBike.getValue().getBikeStatus());
-
+                    System.out.printf("%-16d %-16s %-16d %-16s %-16s %-16s %n", entry.getKey(), entry.getValue().getStationLocation(), pairBike.getKey(), pairBike.getValue().getBikeName(), pairBike.getValue().getBikeColor(), pairBike.getValue().getBikeStatus());
                 }
-
             }
-
-
         }
     }
 

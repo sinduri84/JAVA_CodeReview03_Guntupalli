@@ -1,8 +1,6 @@
 package CityBike;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 import static CityBike.Bike.bikeHash;
 import static CityBike.Bike.printAllBikes;
@@ -12,9 +10,10 @@ import static CityBike.Station.stationHashMap;
 import static CityBike.User.printAllUsers;
 import static CityBike.User.userHashMap;
 
-public class Main {
 
+public class Main {
     public static void main(String[] args) {
+
 
         //Creates Bike objects;
         Bike bike1 = new Bike("Red");
@@ -79,19 +78,20 @@ public class Main {
         //Input options
         Scanner inputNumber = new Scanner(System.in);
         Scanner inputText = new Scanner(System.in);
-        boolean input1 = true;
 
+        //Starts a while loop through different options as an administrator or as a user;
+        boolean input1 = true;
         while (input1) {
             boolean input2 = true;
-            System.out.print("\nPress 1 if you are the administrator" +
-                    "\nPress 2 if you are a user" +
+            System.out.print("\nPress 1 if you are the Administrator" +
+                    "\nPress 2 if you are a User" +
                     "\nPress 3 to exit" +
                     "\nOption: ");
             //Checks if the input value is an integer
             if (inputNumber.hasNextInt()) {
-
                 int inputOption1 = inputNumber.nextInt();
                 if (inputOption1 == 1) {
+                    //Enters as an administrator
                     while (input2) {
                         System.out.print("\nPress 11 if you want to add a new bike" +
                                 "\nPress 12 if you want to add a new bike to a station" +
@@ -104,6 +104,7 @@ public class Main {
                         if (inputNumber.hasNextInt()) {
                             int inputOption2 = inputNumber.nextInt();
                             switch (inputOption2) {
+                                //Adds new Bike;
                                 case 11:
                                     System.out.print("Enter the color of the new bike: ");
                                     String inputText11 = inputText.nextLine();
@@ -111,6 +112,7 @@ public class Main {
                                     System.out.println("New Bike Created");
                                     printAllBikes();
                                     break;
+                                //Adds new Bike to a specified Station;
                                 case 12:
                                     printAllStations();
                                     System.out.print("Enter the color of the new bike: ");
@@ -125,16 +127,17 @@ public class Main {
                                         System.out.println("Please select the appropriate integer!");
                                     }
                                     break;
+                                //Adds a new Station;
                                 case 13:
                                     System.out.print("Enter the location of the new station: ");
                                     String inputText13 = inputText.nextLine();
                                     Station station = new Station(inputText13);
-                                    System.out.println("\nNew Station added!\n");
-                                    printAllStations();
                                     break;
+                                //Prints all users and their details
                                 case 14:
                                     printAllUsers();
                                     break;
+                                //Updates the status of a bike and based on the status, updates its position in Stations;
                                 case 15:
                                     printAllBikes();
                                     System.out.print("Enter the bike id to update the status: ");
@@ -144,10 +147,21 @@ public class Main {
                                             System.out.println("Current Status: " + bikeHash.get(inputNumber15).getBikeStatus());
                                             System.out.println("What status do you want to change it to? Choose between \"CanBeRented, CanNotBeRented, InService, Discarded\" ");
                                             String inputText15 = inputText.nextLine();
+                                            //Checks to make sure the input text is one of the choices of the Bike status enum values and then updates the status;
                                             for (Bike.BikeStatus bikeS : Bike.BikeStatus.values()) {
                                                 if (bikeS.name().equals(inputText15)) {
                                                     bikeHash.get(inputNumber15).setBikeStatus(Bike.BikeStatus.valueOf(inputText15));
                                                     System.out.println("Status Updated");
+                                                    //If the Status has been changed to something other than "CanBeRented", the bike will be removed from the Station - BikeHashMap;
+                                                    if (bikeHash.get(inputNumber15).getBikeStatus() != Bike.BikeStatus.CanBeRented) {
+                                                        Iterator iterate = stationHashMap.entrySet().iterator();
+                                                        while (iterate.hasNext()) {
+                                                            Map.Entry<Integer, Station> pair = (Map.Entry) iterate.next();
+                                                            if (pair.getValue().getBikeHashStation().containsKey(inputNumber15)) {
+                                                                pair.getValue().getBikeHashStation().remove(inputNumber15);
+                                                            }
+                                                        }
+                                                    }
                                                     printAllBikes();
                                                 }
                                             }
@@ -155,26 +169,25 @@ public class Main {
                                         }
                                     }
                                     break;
+                                //Prints all Rental Details;
                                 case 16:
                                     printAllRentals();
                                     break;
+                                //Quit Options
                                 case 17:
                                     input2 = false;
                                     break;
                                 default:
                                     System.out.println("Please choose one of the options");
                                     break;
-
                             }
-
                         } else {
                             System.out.println("Please choose an integer!");
                         }
-
                     }
                     input1 = false;
                 } else if (inputOption1 == 2) {
-                    System.out.print("Press 2");
+                    //Starts in the user section;
                     while (input2) {
                         boolean input3 = true;
                         System.out.print("\nPress 21 if you want to register as a new user" +
@@ -184,28 +197,29 @@ public class Main {
                             int inputOption3 = inputNumber.nextInt();
                             int userId = 0;
                             switch (inputOption3) {
+                                //Registers and automatically signs in as a new user;
                                 case 21:
                                     System.out.print("Enter your First Name: ");
                                     String inputText211 = inputText.nextLine();
                                     System.out.print("Enter your Last Name: ");
                                     String inputText212 = inputText.nextLine();
                                     User user = new User(inputText211, inputText212);
-                                    System.out.println("User Created Successfully");
+                                    System.out.println("User Created Successfully and Automatically Logged in.");
                                     userId = user.getUserID();
                                     break;
+                                //Signs in as a new user;
                                 case 22:
                                     System.out.print("Enter your User Id: ");
                                     int inputNumber21 = inputNumber.nextInt();
                                     if (userHashMap.containsKey(inputNumber21)) {
                                         userId = inputNumber21;
                                     }
-
                                     break;
                                 default:
                                     System.out.println("Press 21 or 22!");
                                     break;
                             }
-
+                            //After successful registration or sign-in, options to rent or return a bike;
                             if (userId != 0) {
                                 System.out.print("\nPress 23 to rent a Bike!" +
                                         "\nPress 24 if you want return a Bike" +
@@ -214,10 +228,12 @@ public class Main {
                                     int inputOption4 = inputNumber.nextInt();
 
                                     switch (inputOption4) {
+                                        //Rents a bike;
                                         case 23:
                                             printAllStations();
                                             System.out.print("Enter the Station Id you want to rent a Bike from: ");
                                             int inputStationId = inputNumber.nextInt();
+
                                             if (stationHashMap.containsKey(inputStationId)) {
                                                 if (stationHashMap.get(inputStationId).getBikeHashStation() == null) {
                                                     System.out.printf("%-16d %-16s %-16s %-16s %-16s %-16s %n", stationHashMap.get(inputStationId).getStationID(), stationHashMap.get(inputStationId).getStationLocation(), "None", "None", "None", "None");
@@ -229,46 +245,48 @@ public class Main {
 
                                                     }
                                                 }
-                                            }
-                                            System.out.print("Enter the Bike Id you want to rent: ");
-                                            int inputBikeId = inputNumber.nextInt();
-                                            Iterator iterBike = stationHashMap.get(inputStationId).getBikeHashStation().entrySet().iterator();
-
-                                            while (iterBike.hasNext()) {
-                                                Map.Entry<Integer, Bike> pairBike = (Map.Entry) iterBike.next();
-                                                if (pairBike.getKey() == inputBikeId) {
-                                                    System.out.print("Enter the start date of your rental only in the format of dd.MM.yyyy: ");
-                                                    String rentNewStartDate = inputText.nextLine();
-                                                    Rent rent = new Rent(userHashMap.get(userId), stationHashMap.get(inputStationId), pairBike.getValue(), rentNewStartDate);
-                                                    System.out.println("Rental Started");
+                                                System.out.print("Enter the Bike Id you want to rent: ");
+                                                int inputBikeId = inputNumber.nextInt();
+                                                Iterator<Map.Entry<Integer, Bike>> itrBike = stationHashMap.get(inputStationId).getBikeHashStation().entrySet().iterator();
+                                                while (itrBike.hasNext()) {
+                                                    Map.Entry<Integer, Bike> entryBike = itrBike.next();
+                                                    if (entryBike.getKey() == inputBikeId) {
+                                                        System.out.print("Enter the start date of your rental only in the format of dd.MM.yyyy: ");
+                                                        String rentNewStartDate = inputText.nextLine();
+                                                        Rent rent = new Rent(userHashMap.get(userId), stationHashMap.get(inputStationId), entryBike.getValue(), rentNewStartDate, itrBike);
+                                                        printAllStations();
+                                                        System.out.println("Rental Started");
+                                                        printAllRentals();
+                                                    }
                                                 }
+                                            } else {
+                                                System.out.println("Please select one of the available stations!");
                                             }
-                                            printAllRentals();
-
-
                                             break;
+                                        //Returns Bike;
                                         case 24:
-                                            if (userHashMap.get(userId).isCurrentlyRentedBike()) {
-                                                printRentalByUser(userHashMap.get(userId));
-                                                try {
-                                                    System.out.print("Enter the Rent Id: ");
-                                                    int inputNumber24Rent = inputNumber.nextInt();
-                                                    System.out.print("Enter the Station Id you want to return the Bike to: ");
-                                                    int inputNumber24Station = inputNumber.nextInt();
-                                                    if ((rentHashMap.get(inputNumber24Rent).getUser().getUserID() == userId) && (rentHashMap.get(inputNumber24Rent).getRentEndDate() == null)) {
+                                            Iterator iterateRent = rentHashMap.entrySet().iterator();
+                                            String noReturn = "";
+                                            while (iterateRent.hasNext()) {
+                                                Map.Entry<Integer, Rent> pairRent = (Map.Entry) iterateRent.next();
+                                                if ((pairRent.getValue().getUser().getUserID() == userId) &&
+                                                        pairRent.getValue().getRentEndDate() == null) {
+                                                    printRentalByUser(userHashMap.get(userId));
+                                                    try {
+
+                                                        System.out.print("Enter the Rent Id: ");
+                                                        int inputNumber24Rent = inputNumber.nextInt();
+                                                        System.out.print("Enter the Station Id you want to return the Bike to: ");
+                                                        int inputNumber24Station = inputNumber.nextInt();
                                                         System.out.print("Enter the end date of your rental only in the format of dd.MM.yyyy: ");
                                                         String rentNewEndDate = inputText.nextLine();
                                                         rentHashMap.get(inputNumber24Rent).returnBike(inputNumber24Rent, stationHashMap.get(inputNumber24Station), rentNewEndDate);
+                                                        printAllRentals();
+                                                    } catch (Exception e) {
+                                                        System.out.println("Please select the right values in the right format!");
                                                     }
-                                                } catch (Exception e) {
-                                                    System.out.println("Please select the right values in the right format!");
                                                 }
-
-
-                                            } else {
-                                                System.out.println("You haven't rented a bike to return!");
                                             }
-
                                             break;
                                         default:
                                             System.out.println("Press 21 or 22!");
@@ -291,12 +309,10 @@ public class Main {
             } else {
                 System.out.println("Please choose an integer option!");
             }
+
+            //Closes the Scanner Inputs;
             inputNumber.close();
             inputText.close();
-
-
         }
-
-
     }
 }

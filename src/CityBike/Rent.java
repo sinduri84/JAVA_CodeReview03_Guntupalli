@@ -23,7 +23,7 @@ public class Rent {
     static DateFormat dFormat = new SimpleDateFormat("dd.MM.yyyy");
     static Calendar calendar = Calendar.getInstance();
 
-    //Constructor for new Rentals
+    //Rents a bike and removes it from the Station
     public Rent(User user, Station station, Bike bike, String rentStartDate) {
         setRentID(staticID + 1);
         staticID++;
@@ -39,16 +39,34 @@ public class Rent {
         this.user.setCurrentlyRentedBike(true);
         //Adds the new rental to the rental list;
         rentHashMap.put(this.rentID, this);
-
-
     }
+
+    //Rents a Bike and removes the bike from Station; Method for Iterations;
+    public Rent(User user, Station station, Bike bike, String rentStartDate, Iterator itrBike) {
+        setRentID(staticID + 1);
+        staticID++;
+        setUser(user);
+        setStationPickup(station);
+        setBike(bike);
+        //Removes the bike from the bikeList of that particular station
+        itrBike.remove();
+        this.bike.setBikeStatus(BikeStatus.InService);
+        setRentStatus(true);
+        setRentStartDate(rentStartDate);
+        //Sets the User status if they currently rented a bike
+        this.user.setCurrentlyRentedBike(true);
+        //Adds the new rental to the rental list;
+        rentHashMap.put(this.rentID, this);
+    }
+
 
     public void returnBike(int rentID, Station station, String rentEndDate) {
         setRentStatus(false);
         setStationDropOff(station);
+        this.bike.setBikeStatus(BikeStatus.CanBeRented);
         //Adds the bike to the Drop-off Station
         this.stationDropOff.addBike(this.getBike());
-        this.bike.setBikeStatus(BikeStatus.CanBeRented);
+
         setRentEndDate(rentEndDate);
     }
 
@@ -117,7 +135,7 @@ public class Rent {
     }
 
     public static void printAllRentals() {
-        //Tries and catches an error if the date format is not in the specified format
+        //Catches an error if the date format is not in the specified format
         try {
             System.out.printf("%-8s %-16s %-16s %-16s %-32s %-32s %-32s %-16s %-16s %-16s %n", "Rent ID", "Bike", "User", "Pickup Station", "Drop-off Station", "Rent Status", "Bike Status", "Start Date", "Due Date", "Return Date");
             Iterator iterateRent = rentHashMap.entrySet().iterator();
@@ -146,7 +164,6 @@ public class Rent {
                         pairRent.getValue().getBike().getBikeStatus(), bikeStatus,
                         pairRent.getValue().getRentStartDate(), rentDueDate,
                         ((pairRent.getValue().getRentEndDate() != null) ? pairRent.getValue().getRentEndDate() : "None"));
-
             }
         } catch (ParseException e) {
             System.out.println("Please specify the date in the dd.MM.yyyy format");
@@ -165,9 +182,12 @@ public class Rent {
                 String rentDueDate = dFormat.format(calendar.getTime());
                 Date rentDueDateDate = dFormat.parse(rentDueDate);
 
-                if((pairRent.getValue().getUser().getUserID() == user.getUserID()) && pairRent.getValue().getRentEndDate() == null) {
-                    System.out.printf("%-8d %-16s %-16s %-16s %-32s %-32s %-16s %-16s %-16s %n", pairRent.getKey(), pairRent.getValue().getBike().getBikeName(),
-                            pairRent.getValue().getUser().getUserName(), pairRent.getValue().getStationPickup().getStationLocation(),
+                if((pairRent.getValue().getUser().getUserID() == user.getUserID()) &&
+                        pairRent.getValue().getRentEndDate() == null) {
+                    System.out.printf("%-8d %-16s %-16s %-16s %-32s %-32s %-16s %-16s %-16s %n",
+                            pairRent.getKey(), pairRent.getValue().getBike().getBikeName(),
+                            pairRent.getValue().getUser().getUserName(),
+                            pairRent.getValue().getStationPickup().getStationLocation(),
                             ((pairRent.getValue().getStationDropOff() != null) ? pairRent.getValue().getStationDropOff().getStationLocation() : "Not dropped off yet!"),
                             pairRent.getValue().getBike().getBikeStatus(),
                             pairRent.getValue().getRentStartDate(), rentDueDate,

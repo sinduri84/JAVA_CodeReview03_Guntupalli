@@ -8,6 +8,7 @@ public class Bike {
     private int bikeID;
     private String bikeName;
     private String bikeColor;
+    //Uses Class Enum to create Bike status;
     public enum BikeStatus {
         CanBeRented, CanNotBeRented, InService, Discarded
     }
@@ -59,9 +60,5 @@ public class Bike {
     public static void printAllBikes () {
         System.out.printf("%n%n%-16s %-16s %-16s %-16s %n","Bike ID", "Bike Name", "Bike Color", "Bike Status");
         bikeHash.forEach((key, value) -> System.out.printf("%-16s %-16s %-16s %-16s %n", key, value.getBikeName(), value.getBikeColor(), value.getBikeStatus()));
-    }
-
-    public static void updateBikeStatus(int bikeId) {
-
     }
 }
